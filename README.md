@@ -1,4 +1,5 @@
-roblem Statement and Solution
+Problem Statement and Solution :
+
 The core problem is to identify retail app users most likely to purchase within 24 hours to enable targeted marketing and increase conversion rates. My solution is a full-stack machine learning pipeline that automates data processing, trains a predictive model, and deploys it in a production-ready, containerized environment with continuous monitoring.
 
 Technical Deep Dive
