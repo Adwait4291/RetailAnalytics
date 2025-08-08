@@ -21,3 +21,8 @@ Thumbs.db
 .env
 config.json
 secrets.yml
+data
+notebooks
+src/data/raw/
+notebooks
+src\models\mlruns
