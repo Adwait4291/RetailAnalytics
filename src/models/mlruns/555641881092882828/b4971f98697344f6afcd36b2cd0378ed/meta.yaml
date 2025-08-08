@@ -1,0 +1,14 @@
+artifact_uri: file:///mnt/c/Users/hp/Desktop/Retail-App-Analytics/src/models/mlruns/555641881092882828/b4971f98697344f6afcd36b2cd0378ed/artifacts
+end_time: 1754435685452
+entry_point_name: ''
+experiment_id: '555641881092882828'
+lifecycle_stage: active
+run_id: b4971f98697344f6afcd36b2cd0378ed
+run_name: smiling-vole-291
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1754435568940
+status: 3
+tags: []
+user_id: hp

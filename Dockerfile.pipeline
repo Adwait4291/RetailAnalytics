@@ -1,0 +1,35 @@
+# Dockerfile.pipeline
+
+# Stage 1: Use the pre-built base image with all common dependencies installed.
+# This assumes retail-ml-base:latest is built from Dockerfile.base.
+FROM retail-ml-base:latest
+
+# Set the working directory inside the container.
+WORKDIR /app
+
+# Switch to root temporarily to create directories and copy files.
+USER root
+
+# Copy application source code for the pipeline.
+# Using 'src/' as source path ensures only the content of 'src' is copied,
+# not the 'src' directory itself into '/app/src'.
+COPY --chown=app:app src/ /app/src/
+
+# Create necessary directories for models and raw/processed data with proper permissions.
+# These match the volumes defined in docker-compose.yml.
+RUN mkdir -p /app/models /app/data/raw /app/data/processed && \
+    chown -R app:app /app/models /app/data
+
+# Switch back to the non-root 'app' user for security reasons for the main process.
+USER app
+
+# Set an environment variable for the model directory path.
+ENV MODEL_DIR=/app/models
+
+# Add a health check to monitor pipeline status.
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD python -c "import sys; sys.exit(0)" || exit 1
+
+# Command to run when the container starts.
+# This points to your pipeline script within the src/models directory.
+CMD ["python", "-m", "src.models.pipeline"]

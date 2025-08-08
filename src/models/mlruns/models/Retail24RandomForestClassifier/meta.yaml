@@ -1,0 +1,8 @@
+aliases:
+  production: '1'
+creation_timestamp: 1754435680748
+deployment_job_id: null
+deployment_job_state: null
+description: null
+last_updated_timestamp: 1754435684087
+name: Retail24RandomForestClassifier

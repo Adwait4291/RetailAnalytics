@@ -1,0 +1,70 @@
+services:
+  # New service to build the common base image
+  ml-base-builder:
+    build:
+      context: .
+      dockerfile: Dockerfile.base # <--- IMPORTANT: Replace with the actual Dockerfile that builds retail-ml-base
+    image: retail-ml-base:latest # <--- IMPORTANT: This tags the image correctly
+    container_name: retail_24-ml-base-builder-1
+    # No ports or volumes needed for a base image builder unless it has specific requirements
+    restart: "no" # This service just builds the image, doesn't need to keep running
+
+  ml-pipeline:
+    build:
+      context: .
+      dockerfile: Dockerfile.pipeline
+    container_name: retail_24-ml-pipeline-1
+    volumes:
+      - ./data:/app/data
+      - models:/app/models
+    environment:
+      - DOCKER_CONTAINER=true
+      - MODEL_DIR=/app/models
+      - MONGODB_USERNAME=${MONGODB_USERNAME}
+      - MONGODB_PASSWORD=${MONGODB_PASSWORD}
+      - MONGODB_CLUSTER=${MONGODB_CLUSTER}
+      - MONGODB_DATABASE=${MONGODB_DATABASE}
+    depends_on:
+      - mongodb
+      - ml-base-builder # <--- IMPORTANT: Add dependency on the base image builder
+    restart: unless-stopped
+
+  streamlit-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    container_name: retail_24-streamlit-app-1
+    ports:
+      - "8501"
+    volumes:
+      - models:/app/models
+    environment:
+      - DOCKER_CONTAINER=true
+      - MODEL_DIR=/app/models
+      - MONGODB_USERNAME=${MONGODB_USERNAME}
+      - MONGODB_PASSWORD=${MONGODB_PASSWORD}
+      - MONGODB_CLUSTER=${MONGODB_CLUSTER}
+      - MONGODB_DATABASE=${MONGODB_DATABASE}
+    depends_on:
+      - mongodb
+      - ml-base-builder # <--- IMPORTANT: Add dependency on the base image builder
+    restart: "no"
+
+  mongodb:
+    image: mongo:latest
+    container_name: retail_24-mongodb-1
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGODB_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_PASSWORD}
+      - MONGO_INITDB_DATABASE=${MONGODB_DATABASE}
+    restart: unless-stopped
+
+volumes:
+  models:
+    driver: local
+  mongodb_data:
+    driver: local
